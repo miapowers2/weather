@@ -14,14 +14,16 @@ app.get("/", function(req, res) {
 //invoked after hitting go in the html form
 app.post("/", function(req, res) {
     
-    // takes in the zip from the html form, display in // console. Takes in as string, ex. for zip 02139
-        var zip = String(req.body.zipInput);
-        console.log(req.body.zipInput);
+    // takes in the city from the html form, display in // console. Takes in as string, ex. for city 02139
+        var lat = String(req.body.latInput);
+        var lon = String(req.body.lonInput);
+        console.log(req.body.latInput);
+        console.log(req.body.lonInput);
     
     //build up the URL for the JSON query, API Key is // secret and needs to be obtained by signup 
         const units = "imperial";
-        const apiKey = "67f6b382921c1e89b39b20d4f9556f22";
-        const url = "https://api.openweathermap.org/data/2.5/weather?zip=" + zip +  "&units=" + units + "&APPID=" + apiKey;
+        const apiKey = "8e158b19cc08af8deeaaef995d7af0d7";
+        const url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat +  "&lon=" + lon +  "&units=" + units + "&APPID=" + apiKey;
     
     // this gets the data from Open WeatherPI
     https.get(url, function(response){
@@ -30,7 +32,11 @@ app.post("/", function(req, res) {
         // gets individual items from Open Weather API
         response.on("data", function(data){
             const weatherData = JSON.parse(data);
+          console.dir(weatherData)
             const temp = weatherData.main.temp;
+            const realfeel = weatherData.main.feels_like;
+            const humidity = weatherData.main.humidity;
+            const windspeed = weatherData.wind.speed;
             const city = weatherData.name;
             const weatherDescription = weatherData.weather[0].description;
             const icon = weatherData.weather[0].icon;
@@ -38,7 +44,12 @@ app.post("/", function(req, res) {
             
             // displays the output of the results
             res.write("<h1> The weather is " + weatherDescription + "<h1>");
-            res.write("<h2>The Temperature in " + city + " " + zip + " is " + temp + " Degrees Fahrenheit<h2>");
+            res.write("<h2>The Temperature in " + city  + " is " + temp + " Degrees Fahrenheit<h2>");
+            res.write("<h2>The real feel temperature in " + city + " is " + realfeel + " Degrees Fahrenheit<h2>");          
+            res.write("<h2>The humidity in " + city  + " is " + humidity + " %<h2>");
+            res.write("<h2>The wind speed in " + city + " is " + windspeed + " MPH<h2>");
+            res.write("<h2>The cloudiness in " + city + " is " + windspeed + " %<h2>");
+            
             res.write("<img src=" + imageURL +">");
             res.send();
         });
